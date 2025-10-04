@@ -1,11 +1,44 @@
-I assume:
+# UrbanClimate Digital Twin - Space Apps 2025
 
-* Pilot area: *Trichy small pilot polygon* (I include GeoJSON you can use). Change to any polygon if you prefer.
-* You are the non-coding Project Lead (narrative, slides, pitching, LLM prompts).
-* You have 1 Web Developer who can run Node/React + Python/Flask + Colab.
-* If anything fails (Earth Engine signup, deployments) we use *precomputed* outputs and ngrok + a recorded demo (safe fallback).
+🚀 **Pure Mock Demo** - Rapid climate-feedback simulation for urban plans using NASA data sources.
 
-Do *not* skip steps marked *(MUST)*. Copy/paste code and prompts verbatim to save time.
+## Quick Start
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open: http://localhost:5173
+
+## Features
+
+✅ **Interactive Map** - NASA GIBS satellite imagery with Trichy pilot area  
+✅ **Climate Scenarios** - Baseline vs +10% rainfall impact simulation  
+✅ **Impact Metrics** - Population at risk, runoff changes, recommendations  
+✅ **AI Interventions** - Smart urban planning solutions with costs & timelines  
+
+## Demo Workflow
+
+1. **View** Trichy pilot area on satellite map
+2. **Click** "Run Simulation" button  
+3. **Toggle** between climate scenarios
+4. **Review** impact metrics and AI recommendations
+
+## Tech Stack
+
+- React + Leaflet mapping
+- NASA GIBS satellite tiles
+- Pure mock data (no backend needed)
+- Component-based architecture
+
+## Data Sources (Simulated)
+- NASA GPM IMERG (precipitation)
+- NASA SMAP (soil moisture)  
+- SRTM 30m DEM (elevation)
+- WorldPop (population)
+- VIIRS DNB (nighttime lights)
 
 ---
 
