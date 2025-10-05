@@ -1,5 +1,5 @@
-# 🌍 UrbanClimate Digital Twin
-### Real-time Climate Impact Analysis for Smart Cities
+# 🌍 UrbanAI - Climate-Adaptive Urban Digital Twin
+### Real-time Climate Impact Analysis for Smart Cities using NASA Earth Engine
 
 ![Hero Banner](https://img.shields.io/badge/🚀-Space_Apps_2025-blue?style=for-the-badge) ![NASA](https://img.shields.io/badge/🛰️-Real_NASA_Data-green?style=for-the-badge) ![AI](https://img.shields.io/badge/🤖-Local_AI-orange?style=for-the-badge)
 
@@ -7,7 +7,7 @@
 
 ## 🎯 What Is This?
 
-**UrbanClimate Digital Twin** transforms urban planning with **real NASA satellite data** and **local AI intelligence**. Upload your city area, get instant climate impact analysis, and receive AI-powered solutions - all in under 10 seconds.
+**UrbanAI** evaluates proposed urban plans by simulating dual feedback loops: how plans alter local environmental parameters and how climate scenarios affect plan performance. Upload your GeoJSON area, get real-time NASA satellite analysis, and receive AI-powered municipal interventions.
 
 ### 🌟 Perfect For:
 - **City Planners** → Assess flood risks before building
@@ -19,12 +19,14 @@
 
 ## ✨ What Makes It Special?
 
-### 🛰️ **100% Real NASA Data**
-- Live satellite precipitation from space
-- High-resolution elevation maps  
-- Population density analysis
-- Soil moisture monitoring
-- No mock data - everything is authentic!
+### 🛰️ **100% Real NASA Data Pipeline**
+- GPM IMERG precipitation monitoring
+- MODIS LST surface temperature analysis
+- SRTM 30m elevation modeling
+- WorldPop population exposure
+- SMAP soil moisture integration
+- VIIRS nighttime lights for urban patterns
+- No mock data - authenticated Earth Engine access!
 
 ### ⚡ **Lightning Fast**
 - First analysis: 5 seconds
@@ -92,11 +94,13 @@ npm run dev
 
 ### **🌍 Real NASA Satellites Working For You**
 | Data Source | What It Does | Why It Matters |
-|-------------|--------------|----------------|
-| 🛰️ **GPM IMERG** | Live rain monitoring | Know exactly how much it rains |
-| 🏔️ **SRTM** | 30m elevation maps | See where water flows |
-| 👥 **WorldPop** | Population density | Count people at risk |
-| 🌱 **SMAP** | Soil moisture | Predict flood absorption |
+|-------------|--------------|-----------------|
+| 🛰️ **GPM IMERG** | Live precipitation monitoring | Real rainfall measurement from space |
+| 🌡️ **MODIS LST** | Land surface temperature | Heat stress and urban heat island analysis |
+| 🏔️ **SRTM** | 30m elevation data | Terrain analysis for runoff modeling |
+| 👥 **WorldPop** | Population density | Accurate people-at-risk calculations |
+| 🌱 **SMAP** | Soil moisture monitoring | Flood absorption capacity |
+| 🌃 **VIIRS DNB** | Nighttime lights | Urban development patterns |
 
 ### **🎨 Beautiful Interface**
 - **NASA GIBS** satellite imagery basemap
@@ -133,10 +137,11 @@ npm run dev
 > **— Municipal Engineer, Trichy Corporation**
 
 ### **Performance Stats**
-- **🚀 Response Time**: 50ms (cached scenarios)
-- **📊 Accuracy**: NASA-grade satellite data
-- **💡 Solutions**: 3 AI recommendations per analysis
-- **🌍 Coverage**: Works globally, optimized for India
+- **🚀 Response Time**: 50ms (cached scenarios), 5s (new areas)
+- **📊 Data Source**: 6 NASA satellite datasets in real-time
+- **💡 AI Solutions**: 3 prioritized interventions with costs & timelines
+- **💾 Caching**: Multi-level system (Earth Engine + complete simulations)
+- **🌍 Coverage**: Global analysis, optimized for Indian cities
 
 ---
 
@@ -181,8 +186,8 @@ npm run dev
 
 ## 🚀 Space Apps 2025 Innovation
 
-### **Challenge**: *Leveraging Earth Observation Data*
-We took it beyond agriculture to **urban climate resilience**!
+### **Challenge**: *Leveraging Earth Observation Data for Informed Agricultural Decision-Making*
+We extended it to **urban climate resilience** with dual feedback loop analysis!
 
 ### **Our Innovation**:
 - **Real NASA Pipeline** vs mock data demos
@@ -235,10 +240,12 @@ Upload any GeoJSON file for instant analysis anywhere in the world!
 <summary>🔧 <strong>Click to see technical details</strong></summary>
 
 ### **Architecture:**
-- **Frontend**: React + Leaflet mapping
-- **Backend**: Flask + Google Earth Engine  
-- **AI**: Local LMStudio (qwen2.5-coder-7b)
-- **Data**: NASA GPM, SRTM, SMAP, WorldPop, VIIRS
+- **Frontend**: React + Leaflet mapping with NASA GIBS tiles
+- **Backend**: Flask + Google Earth Engine with service account auth
+- **AI**: Local LMStudio (qwen2.5-coder-7b-instruct)
+- **Data**: NASA GPM IMERG, MODIS LST, SRTM, SMAP, WorldPop, VIIRS DNB
+- **Modeling**: SCS Curve Number hydrological method
+- **Caching**: Multi-level cache system for performance
 
 ### **Performance:**
 - **Multi-level caching** for instant scenario switching
@@ -247,9 +254,12 @@ Upload any GeoJSON file for instant analysis anywhere in the world!
 
 ### **APIs:**
 ```bash
-GET  /api/health           # System status
-POST /api/simulate         # Climate analysis  
-GET  /api/cache/status     # Performance metrics
+GET  /api/health                 # Backend health check
+POST /api/simulate               # Climate impact simulation
+POST /api/recommend              # AI intervention generation
+GET  /api/earth-engine/status    # NASA data service status
+GET  /api/cache/status           # Cache performance metrics
+POST /api/cache/clear            # Clear simulation caches
 ```
 
 </details>
