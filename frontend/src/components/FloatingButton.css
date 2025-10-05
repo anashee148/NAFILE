@@ -15,7 +15,7 @@
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 12px;
+  border-radius: 16px;
   box-shadow: 
     0 8px 24px rgba(7, 23, 63, 0.15),
     0 0 0 1px rgba(255, 255, 255, 0.2) inset;
@@ -23,8 +23,8 @@
   z-index: 999;
   transition: all 0.3s ease;
   animation: floatingButtonSlideIn 0.4s ease-out;
-  min-width: 160px;
-  max-width: 180px;
+  min-width: 220px;
+  max-width: 260px;
 }
 
 .floating-button:hover {
@@ -37,17 +37,17 @@
 .floating-button-content {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 18px;
-  min-height: 44px;
+  gap: 14px;
+  padding: 20px 24px;
+  min-height: 60px;
   overflow: hidden;
 }
 
 .floating-button-logo {
-  height: 26px;
+  height: 36px;
   width: auto;
   flex-shrink: 0;
-  max-width: 80px;
+  max-width: 100px;
   object-fit: contain;
 }
 
@@ -60,7 +60,7 @@
 .floating-button-title {
   font-family: 'Fira Sans', sans-serif;
   font-weight: 900;
-  font-size: 14px;
+  font-size: 18px;
   color: var(--deep-blue);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -69,7 +69,7 @@
 
 .floating-button-status {
   font-family: 'Overpass', sans-serif;
-  font-size: 9px;
+  font-size: 12px;
   color: var(--electric-blue);
   font-weight: 600;
   text-transform: uppercase;
