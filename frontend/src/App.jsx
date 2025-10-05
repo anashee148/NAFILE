@@ -217,6 +217,8 @@ function App() {
         overlayData={getCurrentOverlay()}
         scenario={scenario}
         showOverlay={showOverlay}
+        simulationData={simulationData}
+        uploadedFileName={uploadedFileName}
       />
 
       <ControlPanel 

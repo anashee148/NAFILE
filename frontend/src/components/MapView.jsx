@@ -32,7 +32,7 @@ const mapStyles = {
   }
 };
 
-const MapView = ({ planData, overlayData, scenario, showOverlay }) => {
+const MapView = ({ planData, overlayData, scenario, showOverlay, simulationData, uploadedFileName }) => {
   // Calculate center from planData if available
   const getMapCenter = () => {
     if (planData && planData.features && planData.features[0] && planData.features[0].geometry) {
@@ -83,7 +83,7 @@ const MapView = ({ planData, overlayData, scenario, showOverlay }) => {
           />
         )}
       </MapContainer>
-      <Legend />
+      <Legend simulationData={simulationData} showOverlay={showOverlay} uploadedFileName={uploadedFileName} />
     </div>
   );
 };
