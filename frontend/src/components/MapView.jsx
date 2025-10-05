@@ -1,7 +1,6 @@
 import React from 'react';
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
 import L from 'leaflet';
-import Legend from './Legend';
 
 // Fix Leaflet default markers
 delete L.Icon.Default.prototype._getIconUrl;
@@ -83,7 +82,6 @@ const MapView = ({ planData, overlayData, scenario, showOverlay, simulationData,
           />
         )}
       </MapContainer>
-      <Legend simulationData={simulationData} showOverlay={showOverlay} uploadedFileName={uploadedFileName} />
     </div>
   );
 };

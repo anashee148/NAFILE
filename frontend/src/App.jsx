@@ -4,6 +4,7 @@ import FloatingPanel from './components/FloatingPanel';
 import FloatingButton from './components/FloatingButton';
 import IntroPopup from './components/IntroPopup';
 import Toast from './components/Toast';
+import MapLegend from './components/MapLegend';
 // Real data - no more mock imports
 
 function App() {
@@ -347,6 +348,11 @@ function App() {
           onClose={() => setToast(null)}
         />
       )}
+
+      <MapLegend 
+        uploadedFileName={uploadedFileName}
+        simulationData={simulationData}
+      />
     </div>
   );
 }
