@@ -1,13 +1,20 @@
 import React from 'react';
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
 import Legend from './Legend';
 
+// Fix Leaflet default markers
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
+
 const MAP_CONFIG = {
-  center: [13.075, 80.275],
-  zoom: 14,
-  nasaGibsUrl: "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/2024-08-01/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg",
-  fallbackUrl: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+  defaultCenter: [13.075, 80.275],
+  zoom: 13,
+  nasaGibsUrl: "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/2024-10-01/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg"
 };
 
 const mapStyles = {
@@ -17,40 +24,45 @@ const mapStyles = {
     fillOpacity: 0.1,
     fillColor: '#FF6B35'
   },
-  baseline: {
-    color: '#4ECDC4',
-    weight: 2,
-    fillOpacity: 0.4,
-    fillColor: '#4ECDC4'
-  },
-  scenarioB: {
+  floodRisk: {
     color: '#FF3E41',
     weight: 2,
-    fillOpacity: 0.5,
+    fillOpacity: 0.4,
     fillColor: '#FF3E41'
   }
 };
 
 const MapView = ({ planData, overlayData, scenario, showOverlay }) => {
+  // Calculate center from planData if available
+  const getMapCenter = () => {
+    if (planData && planData.features && planData.features[0] && planData.features[0].geometry) {
+      const coords = planData.features[0].geometry.coordinates[0];
+      if (coords && coords.length > 0) {
+        const centerLat = coords.reduce((sum, coord) => sum + coord[1], 0) / coords.length;
+        const centerLon = coords.reduce((sum, coord) => sum + coord[0], 0) / coords.length;
+        return [centerLat, centerLon];
+      }
+    }
+    return MAP_CONFIG.defaultCenter;
+  };
+
   return (
     <div className="map-container">
       <MapContainer 
-        center={MAP_CONFIG.center} 
+        center={getMapCenter()} 
         zoom={MAP_CONFIG.zoom} 
         style={{height: '100%', width: '100%'}}
+        key={`map-${JSON.stringify(getMapCenter())}`}
       >
-        {/* Primary NASA GIBS tiles */}
+        {/* NASA GIBS Satellite Imagery with OpenStreetMap fallback */}
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution="© OpenStreetMap contributors"
+        />
         <TileLayer
           url={MAP_CONFIG.nasaGibsUrl}
-          attribution="NASA GIBS"
-          errorTileUrl="https://via.placeholder.com/256x256/cccccc/999999?text=NASA+GIBS"
-        />
-        
-        {/* Fallback OpenStreetMap tiles */}
-        <TileLayer
-          url={MAP_CONFIG.fallbackUrl}
-          attribution="© OpenStreetMap contributors"
-          opacity={0.3}
+          attribution="NASA GIBS - Real Satellite Imagery"
+          opacity={0.8}
         />
         
         {/* Planning area polygon */}
@@ -62,12 +74,12 @@ const MapView = ({ planData, overlayData, scenario, showOverlay }) => {
           />
         )}
         
-        {/* Overlay based on scenario */}
+        {/* Real climate analysis overlay */}
         {showOverlay && overlayData && (
           <GeoJSON 
             data={overlayData} 
-            style={scenario === 'baseline' ? mapStyles.baseline : mapStyles.scenarioB}
-            key={`overlay-${scenario}`}
+            style={mapStyles.floodRisk}
+            key={`climate-overlay`}
           />
         )}
       </MapContainer>

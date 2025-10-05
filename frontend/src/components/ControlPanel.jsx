@@ -6,24 +6,35 @@ import ScenarioControls from './ScenarioControls';
 import MetricsCard from './MetricsCard';
 import InterventionsSection from './InterventionsSection';
 import DataSourcesSection from './DataSourcesSection';
+import DataLoadingPanel from './DataLoadingPanel';
 
 const ControlPanel = ({ 
   scenario, 
   onScenarioChange, 
   simulationData, 
   loading, 
+  simulationStep,
   onRunSimulation,
-  onLoadPlan 
+  onLoadPlan,
+  uploadedFileName,
+  backendStatus,
+  earthEngineStatus 
 }) => {
   return (
     <div className="control-panel">
       <Header />
       
-      <PlanSection onLoadPlan={onLoadPlan} />
+      <DataLoadingPanel 
+        backendStatus={backendStatus}
+        earthEngineStatus={earthEngineStatus}
+      />
+      
+      <PlanSection onLoadPlan={onLoadPlan} uploadedFileName={uploadedFileName} />
       
       <SimulationSection 
         onRunSimulation={onRunSimulation}
         loading={loading}
+        simulationStep={simulationStep}
       />
 
       {simulationData && (
