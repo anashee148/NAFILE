@@ -12,18 +12,18 @@ const EnvironmentalCard = ({ metrics, loading }) => {
   let imperviousLevel, imperviousColor;
   if (imperviousFraction < 0.3) {
     imperviousLevel = 'Low Urbanization';
-    imperviousColor = '#4ECDC4';
+    imperviousColor = '#2E96F5'; // NASA Blue
   } else if (imperviousFraction < 0.6) {
     imperviousLevel = 'Medium Urbanization';
-    imperviousColor = '#FFA500';
+    imperviousColor = '#EAFE07'; // NASA Yellow
   } else {
     imperviousLevel = 'High Urbanization';
-    imperviousColor = '#FF3E41';
+    imperviousColor = '#E43700'; // NASA Red
   }
 
   return (
     <div className="section">
-      <h3>🌍 Environmental Parameters</h3>
+      <h3>Environmental Parameters</h3>
       <div className="metrics-card" style={{
         opacity: loading ? 0.6 : 1,
         transition: 'opacity 0.3s ease'
@@ -31,7 +31,7 @@ const EnvironmentalCard = ({ metrics, loading }) => {
         <div className="metric-item">
           <span className="metric-label">Surface Temperature:</span>
           <span className="metric-value">
-            {loading ? '🔄' : `${temperature.toFixed(1)}°C`}
+            {loading ? 'Loading...' : `${temperature.toFixed(1)}°C`}
           </span>
         </div>
         
@@ -47,21 +47,21 @@ const EnvironmentalCard = ({ metrics, loading }) => {
         <div className="metric-item">
           <span className="metric-label">Area Coverage:</span>
           <span className="metric-value">
-            {loading ? '🔄' : `${(metrics.area_ha || 0).toFixed(1)} hectares`}
+            {loading ? 'Loading...' : `${(metrics.area_ha || 0).toFixed(1)} hectares`}
           </span>
         </div>
         
         <div className="metric-item">
           <span className="metric-label">Population Density:</span>
           <span className="metric-value">
-            {loading ? '🔄' : `${(metrics.population_density || 0).toFixed(1)} people/ha`}
+            {loading ? 'Loading...' : `${(metrics.population_density || 0).toFixed(1)} people/ha`}
           </span>
         </div>
         
         <div className="metric-item">
           <span className="metric-label">Mean Elevation:</span>
           <span className="metric-value">
-            {loading ? '🔄' : `${(metrics.elevation_m || 0).toFixed(1)}m ASL`}
+            {loading ? 'Loading...' : `${(metrics.elevation_m || 0).toFixed(1)}m ASL`}
           </span>
         </div>
       </div>
@@ -69,11 +69,13 @@ const EnvironmentalCard = ({ metrics, loading }) => {
       {loading && (
         <div style={{
           fontSize: '11px',
-          color: '#666',
+          color: '#0042A6',
           textAlign: 'center',
-          marginTop: '8px'
+          marginTop: '8px',
+          fontFamily: 'Overpass, sans-serif',
+          fontWeight: '600'
         }}>
-          ⏳ Processing environmental data...
+          Processing environmental data...
         </div>
       )}
     </div>

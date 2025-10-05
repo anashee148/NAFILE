@@ -44,7 +44,7 @@ const MetricsCard = ({ metrics, scenario, loading }) => {
         <div className="metric-item">
           <span className="metric-label">People Affected:</span>
           <span className="metric-value">
-            {loading ? '🔄' : 
+            {loading ? 'Loading...' : 
               scenario === 'baseline' 
                 ? (metrics.baseline_people || 0).toLocaleString()
                 : (metrics.scenario_people || 0).toLocaleString()
@@ -66,9 +66,7 @@ const MetricsCard = ({ metrics, scenario, loading }) => {
         <div className="metric-item">
           <span className="metric-label">Heat Stress:</span>
           <span className="metric-value" style={{
-            color: loading ? '#999' : 
-              metrics.heat_stress_level === 'Low' ? '#4ECDC4' :
-              metrics.heat_stress_level === 'Medium' ? '#FFA500' : '#FF3E41'
+            color: loading ? '#999' : getHeatStressColor(metrics.heat_stress_level)
           }}>
             {loading ? 'Calculating...' : `${metrics.heat_stress_level} (${(metrics.heat_affected_people || 0).toLocaleString()} people)`}
           </span>
@@ -85,9 +83,11 @@ const MetricsCard = ({ metrics, scenario, loading }) => {
       {loading && (
         <div style={{
           fontSize: '11px',
-          color: '#666',
+          color: '#0042A6',
           textAlign: 'center',
-          marginTop: '8px'
+          marginTop: '8px',
+          fontFamily: 'Overpass, sans-serif',
+          fontWeight: '600'
         }}>
           Recalculating with new scenario...
         </div>
