@@ -4,6 +4,8 @@ import PlanSection from './PlanSection';
 import SimulationSection from './SimulationSection';
 import ScenarioControls from './ScenarioControls';
 import MetricsCard from './MetricsCard';
+import EnvironmentalCard from './EnvironmentalCard';
+import PlanImpactCard from './PlanImpactCard';
 import InterventionsSection from './InterventionsSection';
 import DataSourcesSection from './DataSourcesSection';
 import DataLoadingPanel from './DataLoadingPanel';
@@ -47,6 +49,17 @@ const ControlPanel = ({
 
           <MetricsCard 
             metrics={simulationData.metrics}
+            scenario={scenario}
+            loading={loading}
+          />
+
+          <EnvironmentalCard 
+            metrics={simulationData.metrics}
+            loading={loading}
+          />
+
+          <PlanImpactCard 
+            simulationData={simulationData}
             scenario={scenario}
             loading={loading}
           />

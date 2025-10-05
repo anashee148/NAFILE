@@ -18,6 +18,16 @@ const MetricsCard = ({ metrics, scenario, loading }) => {
     riskColor = '#FF3E41'; // Red
   }
 
+  // Heat stress color coding
+  const getHeatStressColor = (level) => {
+    switch(level) {
+      case 'Low': return '#4ECDC4';
+      case 'Medium': return '#FFA500'; 
+      case 'High': return '#FF3E41';
+      default: return '#999';
+    }
+  };
+
   return (
     <div className="section">
       <h3>📊 Impact Metrics</h3>
@@ -48,7 +58,23 @@ const MetricsCard = ({ metrics, scenario, loading }) => {
           </span>
         </div>
         <div className="metric-item">
-          <span className="metric-label">Risk Level:</span>
+          <span className="metric-label">Surface Temperature:</span>
+          <span className="metric-value">
+            {loading ? '🔄' : `${metrics.mean_temperature_c}°C`}
+          </span>
+        </div>
+        <div className="metric-item">
+          <span className="metric-label">Heat Stress:</span>
+          <span className="metric-value" style={{
+            color: loading ? '#999' : 
+              metrics.heat_stress_level === 'Low' ? '#4ECDC4' :
+              metrics.heat_stress_level === 'Medium' ? '#FFA500' : '#FF3E41'
+          }}>
+            {loading ? 'Calculating...' : `${metrics.heat_stress_level} (${(metrics.heat_affected_people || 0).toLocaleString()} people)`}
+          </span>
+        </div>
+        <div className="metric-item">
+          <span className="metric-label">Flood Risk Level:</span>
           <span className="metric-value" style={{
             color: loading ? '#999' : riskColor
           }}>
