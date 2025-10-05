@@ -8,6 +8,7 @@ const SimulationSection = ({ onRunSimulation, loading, simulationStep }) => {
       case 'elevation': return '🏔️ Processing elevation data...';
       case 'runoff': return '💧 Calculating runoff scenarios...';
       case 'ai': return '🤖 Generating AI recommendations...';
+      case 'updating': return '🔄 Updating scenario calculations...';
       default: return '🔄 Initializing simulation...';
     }
   };

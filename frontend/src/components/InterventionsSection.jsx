@@ -22,19 +22,51 @@ const InterventionCard = ({ intervention, index }) => {
   );
 };
 
-const InterventionsSection = ({ interventions }) => {
+const InterventionsSection = ({ interventions, loading }) => {
   if (!interventions || interventions.length === 0) return null;
 
   return (
     <div className="section">
       <h3>🛠️ Recommended Interventions</h3>
-      {interventions.map((intervention, index) => (
-        <InterventionCard 
-          key={index} 
-          intervention={intervention} 
-          index={index} 
-        />
-      ))}
+      <div style={{
+        opacity: loading ? 0.6 : 1,
+        transition: 'opacity 0.3s ease'
+      }}>
+        {loading ? (
+          <div className="intervention-card" style={{
+            textAlign: 'center',
+            padding: '20px',
+            background: '#f8f9fa',
+            border: '1px dashed #ccc'
+          }}>
+            <div style={{ fontSize: '24px', marginBottom: '10px' }}>🤖</div>
+            <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>
+              AI is generating new recommendations...
+            </div>
+            <div style={{ fontSize: '12px', color: '#999' }}>
+              Analyzing scenario data with LMStudio
+            </div>
+          </div>
+        ) : (
+          interventions.map((intervention, index) => (
+            <InterventionCard 
+              key={index} 
+              intervention={intervention} 
+              index={index} 
+            />
+          ))
+        )}
+      </div>
+      {loading && (
+        <div style={{
+          fontSize: '11px',
+          color: '#666',
+          textAlign: 'center',
+          marginTop: '8px'
+        }}>
+          ⏳ Generating scenario-specific interventions...
+        </div>
+      )}
     </div>
   );
 };

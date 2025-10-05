@@ -133,9 +133,56 @@ function App() {
     }
   };
 
-  const handleScenarioChange = (newScenario) => {
+  const handleScenarioChange = async (newScenario) => {
     setScenario(newScenario);
     localStorage.setItem('scenario', newScenario);
+    
+    // Re-run simulation with new scenario if we have plan data
+    if (currentPlan && simulationData) {
+      setLoading(true);
+      setSimulationStep('updating');
+      
+      try {
+        console.log(`🔄 Updating to ${newScenario} scenario...`);
+        
+        const response = await fetch('http://localhost:5000/api/simulate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            geometry: currentPlan.features[0].geometry,
+            scenario: newScenario
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`Backend error: ${response.status}`);
+        }
+
+        const simulationResult = await response.json();
+        setSimulationData(simulationResult);
+        
+        // Save updated simulation data
+        localStorage.setItem('simulationData', JSON.stringify(simulationResult));
+
+        // Show scenario change toast
+        setToast({
+          message: `Scenario Updated! 📊\n\nNow showing: ${newScenario.toUpperCase()}\nMetrics recalculated with real NASA data`,
+          type: 'success'
+        });
+        
+      } catch (error) {
+        console.error('❌ Scenario update failed:', error);
+        setToast({
+          message: `Scenario Update Failed!\n\n${error.message}`,
+          type: 'error'
+        });
+      } finally {
+        setLoading(false);
+        setSimulationStep('');
+      }
+    }
   };
 
   const handleLoadPlan = () => {
@@ -180,8 +227,16 @@ function App() {
   };
 
   const getCurrentOverlay = () => {
-    if (!showOverlay || !simulationData?.overlays) return null;
-    return scenario === 'baseline' ? simulationData.overlays.baseline : simulationData.overlays.scenarioB;
+    if (!showOverlay || !simulationData) return null;
+    
+    // For now, return a simple overlay based on the current plan geometry
+    // since the backend might not be sending overlay data
+    if (simulationData.overlays) {
+      return scenario === 'baseline' ? simulationData.overlays.baseline : simulationData.overlays.rcp45;
+    }
+    
+    // Return null if no overlay data - this prevents crashes
+    return null;
   };
 
   return (

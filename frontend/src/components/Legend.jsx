@@ -9,7 +9,7 @@ const Legend = ({ simulationData, showOverlay, uploadedFileName }) => {
     return 'Current Area';
   };
 
-  console.log('🗺️ Legend rendering:', { simulationData: !!simulationData, showOverlay, uploadedFileName });
+
 
   return (
     <div className="legend" style={{

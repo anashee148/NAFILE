@@ -42,11 +42,13 @@ const ControlPanel = ({
           <ScenarioControls 
             scenario={scenario}
             onScenarioChange={onScenarioChange}
+            loading={loading}
           />
 
           <MetricsCard 
             metrics={simulationData.metrics}
             scenario={scenario}
+            loading={loading}
           />
 
           <InterventionsSection 
