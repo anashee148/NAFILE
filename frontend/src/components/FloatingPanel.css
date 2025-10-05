@@ -763,34 +763,54 @@
 /* Mobile Design */
 @media (max-width: 768px) {
   .floating-panel-overlay {
-    padding: 10px;
+    padding: 8px;
+    background: rgba(7, 23, 63, 0.2);
   }
 
   .floating-panel {
-    width: 98vw;
-    height: 95vh;
-    max-width: 900px;
-    max-height: 800px;
-    border-radius: 16px;
-    margin: 0;
+    width: 96vw;
+    height: 92vh;
+    max-width: none;
+    max-height: none;
+    border-radius: 20px;
+    margin: 4vh 2vw;
+    box-shadow: 
+      0 20px 40px rgba(7, 23, 63, 0.3),
+      0 0 0 1px rgba(255, 255, 255, 0.3) inset;
   }
   
   .panel-header {
     padding: 16px 20px;
+    border-radius: 20px 20px 0 0;
   }
   
   .panel-title h1 {
-    font-size: 24px;
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+  
+  .panel-title span {
+    font-size: 11px;
   }
 
   .tab-content {
-    padding: 16px;
+    padding: 20px;
     gap: 16px;
+    border-radius: 0 0 20px 20px;
   }
 
+  .panel-tabs {
+    padding: 0 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
   .tab-button {
     padding: 12px 16px;
-    font-size: 14px;
+    font-size: 13px;
+    white-space: nowrap;
+    min-width: 90px;
+    flex-shrink: 0;
   }
 
   .analysis-row {
@@ -799,8 +819,16 @@
   }
 
   .solutions-row {
-    grid-template-columns: 1fr;
+    display: block;
     gap: 16px;
+  }
+  
+  .solutions-full-width {
+    margin-bottom: 16px;
+  }
+  
+  .impact-section {
+    margin-top: 0;
   }
 
   .solutions-full-width {
@@ -812,9 +840,14 @@
   }
 
   .section {
-    padding: 16px;
+    padding: 18px;
     margin-bottom: 16px;
-    border-radius: 8px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(15px);
+    box-shadow: 
+      0 4px 16px rgba(7, 23, 63, 0.08),
+      0 0 0 1px rgba(255, 255, 255, 0.3) inset;
   }
 
   .section h3 {
