@@ -6,6 +6,10 @@ import ee
 import os
 from datetime import datetime, timedelta
 import logging
+from dotenv import load_dotenv
+
+# Load environment variables from .env (if present). .env should NOT be committed to git.
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
@@ -20,13 +24,18 @@ LMSTUDIO_URL = os.getenv('LMSTUDIO_URL', 'http://localhost:1234')
 class LMStudioService:
     def __init__(self, base_url=LMSTUDIO_URL):
         self.base_url = base_url
-    
+        # Load potential OpenAI API key from environment (or .env)
+        self.openai_api_key = os.getenv('OPENAI_API_KEY') or os.getenv('OPENAPI_KEY')
+        # Allow overriding the OpenAI API URL and model via env
+        self.openai_url = os.getenv('OPENAI_API_URL', 'https://api.openai.com/v1/chat/completions')
+        self.openai_model = os.getenv('OPENAI_MODEL', 'gpt-3.5-turbo')
+        self.use_openai = bool(self.openai_api_key)
+
     def generate_recommendations(self, metrics):
-        """Generate policy recommendations using local LMStudio LLM"""
-        
+        """Generate policy recommendations using OpenAI (if key present) otherwise LMStudio."""
         # Dynamic location context based on coordinates
         location_context = self._get_location_context(metrics.get('coordinates', [80.27, 13.07]))
-        
+
         # Add randomness to avoid repetitive responses
         import random
         focus_areas = [
@@ -36,7 +45,7 @@ class LMStudioService:
             "sustainable development and flood-resistant building codes"
         ]
         focus = random.choice(focus_areas)
-        
+
         # Add scenario-specific urgency context
         scenario_context = {
             'baseline': "current conditions with moderate climate risks",
@@ -44,7 +53,7 @@ class LMStudioService:
             'rcp85': "high-impact climate scenario needing urgent interventions"
         }
         urgency = scenario_context.get(metrics.get('scenario', 'baseline'), "moderate risk scenario")
-        
+
         prompt = f"""You are an expert urban planner analyzing {location_context['region']} under {urgency}. 
 
 REAL CLIMATE DATA:
@@ -66,7 +75,7 @@ Generate exactly 3 prioritized urban planning interventions in JSON format:
       "title": "intervention name",
       "description": "1-2 sentence description",
       "runoff_reduction_pct": number,
-      "cost_bracket": "Low/Medium/High (₹X-Y lakhs)",
+      "cost_bracket": "Low/Medium/High (\u20b9X-Y lakhs)",
       "implementation_months": number,
       "kpi": "monitoring indicator",
       "contact": "municipal department"
@@ -76,18 +85,52 @@ Generate exactly 3 prioritized urban planning interventions in JSON format:
 
 Focus on flood mitigation, use Indian Rupee costs, and include realistic timelines."""
 
+        # Prepare messages
+        system_message = {"role": "system", "content": "You are an expert urban planner. Generate exactly 3 urban planning interventions in valid JSON format only. No additional text."}
+        user_message = {"role": "user", "content": prompt}
+
+        # Try OpenAI first if key present
+        if self.use_openai:
+            try:
+                headers = {
+                    'Authorization': f'Bearer {self.openai_api_key}',
+                    'Content-Type': 'application/json'
+                }
+                payload = {
+                    'model': self.openai_model,
+                    'messages': [system_message, user_message],
+                    'temperature': 0.3,
+                    'max_tokens': 1000
+                }
+                resp = requests.post(self.openai_url, json=payload, headers=headers, timeout=30)
+                resp.raise_for_status()
+                result = resp.json()
+                text = result['choices'][0]['message']['content'].strip()
+                # Try parse JSON
+                try:
+                    if text.startswith('```json'):
+                        text = text.replace('```json', '').replace('```', '').strip()
+                    elif text.startswith('```'):
+                        text = text.replace('```', '').strip()
+                    parsed_json = json.loads(text)
+                    return parsed_json
+                except json.JSONDecodeError as e:
+                    logger.error(f"OpenAI JSON parse failed: {e}, text={text}")
+                    # fallthrough to LMStudio fallback
+            except Exception as e:
+                logger.error(f"OpenAI request failed: {e}")
+
+        # Fallback to LMStudio
         try:
             response = requests.post(
                 f"{self.base_url}/v1/chat/completions", 
                 json={
                     "model": "qwen2.5-coder-7b-instruct",
-                    "messages": [
-                        {"role": "system", "content": "You are an expert urban planner. Generate exactly 3 urban planning interventions in valid JSON format only. No additional text."},
-                        {"role": "user", "content": prompt}
-                    ],
+                    "messages": [system_message, user_message],
                     "max_tokens": 1000,
                     "temperature": 0.3
-                }
+                },
+                timeout=30
             )
             
             if response.status_code == 200:
@@ -112,7 +155,7 @@ Focus on flood mitigation, use Indian Rupee costs, and include realistic timelin
                 
         except Exception as e:
             logger.error(f"LMStudio connection failed: {e}")
-            raise Exception(f"LMStudio connection failed: {str(e)}. Please ensure LMStudio is running on localhost:1234")
+            raise Exception(f"LMStudio connection failed: {str(e)}. Please ensure LMStudio is running on localhost:1234 or set OPENAI_API_KEY in .env")
     
     def _get_location_context(self, coordinates):
         """Get location-specific context based on coordinates"""
