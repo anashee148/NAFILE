@@ -161,6 +161,12 @@ function App() {
         }
 
         const simulationResult = await response.json();
+        console.log(`📊 New scenario data:`, {
+          scenario: simulationResult.scenario,
+          runoff_change: simulationResult.metrics?.peak_runoff_change_pct,
+          people_affected: simulationResult.metrics?.scenario_people,
+          interventions_count: simulationResult.interventions?.length
+        });
         setSimulationData(simulationResult);
         
         // Save updated simulation data

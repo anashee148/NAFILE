@@ -37,18 +37,26 @@ class LMStudioService:
         ]
         focus = random.choice(focus_areas)
         
-        prompt = f"""You are an expert urban planner analyzing {location_context['region']}. 
+        # Add scenario-specific urgency context
+        scenario_context = {
+            'baseline': "current conditions with moderate climate risks",
+            'rcp45': "increased rainfall scenario requiring proactive measures", 
+            'rcp85': "high-impact climate scenario needing urgent interventions"
+        }
+        urgency = scenario_context.get(metrics.get('scenario', 'baseline'), "moderate risk scenario")
+        
+        prompt = f"""You are an expert urban planner analyzing {location_context['region']} under {urgency}. 
 
 REAL CLIMATE DATA:
 - Peak runoff change: +{metrics.get('peak_runoff_change_pct', 45)}%
 - People affected: {metrics.get('people_affected', 2100):,}
 - Area: {metrics.get('area_ha', 100)} hectares  
 - Mean rainfall: {metrics.get('mean_rain_mm', 1250)}mm
-- Scenario: {metrics.get('scenario', 'baseline')}
+- Scenario: {metrics.get('scenario', 'baseline')} ({urgency})
 
 LOCATION CONTEXT: {location_context['description']}
 
-Focus on {focus}. Generate exactly 3 specific, implementable urban planning interventions:
+Focus on {focus}. For {metrics.get('scenario', 'baseline')} scenario, generate exactly 3 specific, implementable urban planning interventions:
 
 Generate exactly 3 prioritized urban planning interventions in JSON format:
 
@@ -316,6 +324,11 @@ def simulate_climate_impact():
             
         people_affected = int(total_population * risk_factor)
         
+        # Debug logging (after calculations)
+        logger.info(f"Scenario: {scenario}, Multiplier: {multiplier}")
+        logger.info(f"Base precipitation: {baseline_precipitation:.1f}mm, Scenario precipitation: {scenario_precipitation:.1f}mm")
+        logger.info(f"Runoff increase: {runoff_increase:.1f}%, People affected: {people_affected}")
+        
         # Get center coordinates for location context
         center_coords = geometry['coordinates'][0]
         center_lat = sum(coord[1] for coord in center_coords) / len(center_coords)
@@ -399,7 +412,7 @@ def simulate_climate_impact():
                 "baseline_people": int(total_population * 0.05),  # 5% baseline risk
                 "scenario_people": people_affected,
                 "peak_runoff_change_pct": round(runoff_increase, 1),
-                "mean_rain_mm": round(climate_data['mean_precipitation_mm'], 0),
+                "mean_rain_mm": round(scenario_precipitation, 0),  # Show scenario-specific rainfall
                 "total_population": total_population,
                 "area_ha": round(area_ha, 2)
             },
