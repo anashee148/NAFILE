@@ -215,8 +215,6 @@
   overflow-y: auto;
   flex: 1;
   min-height: 0;
-  overflow: hidden;
-  min-height: 0;
 }
 
 /* Section styling */
