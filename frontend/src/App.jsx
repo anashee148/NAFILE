@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import MapView from './components/MapView';
-import ControlPanel from './components/ControlPanel';
+import FloatingPanel from './components/FloatingPanel';
+import FloatingButton from './components/FloatingButton';
+import IntroPopup from './components/IntroPopup';
 import Toast from './components/Toast';
 // Real data - no more mock imports
 
@@ -49,6 +51,14 @@ function App() {
   const [backendStatus, setBackendStatus] = useState('checking');
   const [earthEngineStatus, setEarthEngineStatus] = useState('unknown');
   const [toast, setToast] = useState(null);
+  const [showIntroPopup, setShowIntroPopup] = useState(() => {
+    return !localStorage.getItem('intro-completed');
+  });
+  const [panelVisible, setPanelVisible] = useState(() => {
+    // Only show panel if intro was already completed
+    return localStorage.getItem('intro-completed') === 'true';
+  });
+  const [panelMinimized, setPanelMinimized] = useState(false);
   
   // Check backend and Earth Engine status
   useEffect(() => {
@@ -245,6 +255,25 @@ function App() {
     return null;
   };
 
+  const handleIntroComplete = () => {
+    setShowIntroPopup(false);
+    localStorage.setItem('intro-completed', 'true');
+    setPanelVisible(true);
+    setPanelMinimized(false);
+  };
+
+  const handlePanelToggle = () => {
+    setPanelVisible(!panelVisible);
+    setPanelMinimized(false);
+  };
+
+  const handlePanelMinimize = () => {
+    setPanelVisible(false);
+    setPanelMinimized(true);
+  };
+
+
+
   return (
     <div className="app">
       {/* System Status Bar */}
@@ -261,15 +290,15 @@ function App() {
         fontWeight: 'bold',
         minWidth: '200px'
       }}>
-        <div>🛰️ NASA DATA + AI - Space Apps 2025</div>
+        <div>NASA EARTH ENGINE + AI - Space Apps 2025</div>
         <div style={{fontSize: '9px', marginTop: '2px', opacity: 0.9}}>
-          Backend: {backendStatus === 'connected' ? '🟢 Online' : 
-                   backendStatus === 'checking' ? '🟡 Checking...' : '🔴 Offline'} | 
-          Earth Engine: {earthEngineStatus === 'connected' ? '🟢 Auth' : 
-                        earthEngineStatus === 'needs_auth' ? '🟡 Need Auth' : '🔴 Unknown'}
+          Backend: {backendStatus === 'connected' ? 'Online' : 
+                   backendStatus === 'checking' ? 'Checking...' : 'Offline'} | 
+          Earth Engine: {earthEngineStatus === 'connected' ? 'Authenticated' : 
+                        earthEngineStatus === 'needs_auth' ? 'Auth Required' : 'Unknown'}
         </div>
         <div style={{fontSize: '8px', marginTop: '2px', opacity: 0.8}}>
-          📍 Area: {uploadedFileName.replace('.geojson', '').replace('_area', '')}
+          Area: {uploadedFileName.replace('.geojson', '').replace('_area', '')}
         </div>
       </div>
 
@@ -282,18 +311,34 @@ function App() {
         uploadedFileName={uploadedFileName}
       />
 
-      <ControlPanel 
-        scenario={scenario}
-        onScenarioChange={handleScenarioChange}
-        simulationData={simulationData}
-        loading={loading}
-        simulationStep={simulationStep}
-        onRunSimulation={handleRunSimulation}
-        onLoadPlan={handleLoadPlan}
-        uploadedFileName={uploadedFileName}
-        backendStatus={backendStatus}
-        earthEngineStatus={earthEngineStatus}
-      />
+      {showIntroPopup && (
+        <IntroPopup onComplete={handleIntroComplete} />
+      )}
+
+      {panelVisible && (
+        <FloatingPanel 
+          scenario={scenario}
+          onScenarioChange={handleScenarioChange}
+          simulationData={simulationData}
+          loading={loading}
+          simulationStep={simulationStep}
+          onRunSimulation={handleRunSimulation}
+          onLoadPlan={handleLoadPlan}
+          uploadedFileName={uploadedFileName}
+          backendStatus={backendStatus}
+          earthEngineStatus={earthEngineStatus}
+          isVisible={panelVisible}
+          onToggle={handlePanelToggle}
+          onMinimize={handlePanelMinimize}
+        />
+      )}
+
+      {(!panelVisible && !showIntroPopup) && (
+        <FloatingButton
+          onClick={handlePanelToggle}
+          simulationData={simulationData}
+        />
+      )}
 
       {toast && (
         <Toast

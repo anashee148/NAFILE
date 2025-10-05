@@ -9,28 +9,28 @@ const MetricsCard = ({ metrics, scenario, loading }) => {
   
   if (runoffIncrease <= 10) {
     riskLevel = 'Low';
-    riskColor = '#4ECDC4'; // Green
+    riskColor = '#2E96F5'; // NASA Blue
   } else if (runoffIncrease <= 30) {
     riskLevel = 'Medium';
-    riskColor = '#FFA500'; // Orange
+    riskColor = '#EAFE07'; // NASA Yellow
   } else {
     riskLevel = 'High';
-    riskColor = '#FF3E41'; // Red
+    riskColor = '#E43700'; // NASA Red
   }
 
   // Heat stress color coding
   const getHeatStressColor = (level) => {
     switch(level) {
-      case 'Low': return '#4ECDC4';
-      case 'Medium': return '#FFA500'; 
-      case 'High': return '#FF3E41';
+      case 'Low': return '#2E96F5';
+      case 'Medium': return '#EAFE07'; 
+      case 'High': return '#E43700';
       default: return '#999';
     }
   };
 
   return (
     <div className="section">
-      <h3>📊 Impact Metrics</h3>
+      <h3>Impact Metrics</h3>
       <div className="metrics-card" style={{
         opacity: loading ? 0.6 : 1,
         transition: 'opacity 0.3s ease'
@@ -38,7 +38,7 @@ const MetricsCard = ({ metrics, scenario, loading }) => {
         <div className="metric-item">
           <span className="metric-label">Peak Runoff Change:</span>
           <span className="metric-value">
-            {loading ? '🔄' : `+${metrics.peak_runoff_change_pct}%`}
+            {loading ? 'Calculating...' : `+${metrics.peak_runoff_change_pct}%`}
           </span>
         </div>
         <div className="metric-item">
@@ -54,13 +54,13 @@ const MetricsCard = ({ metrics, scenario, loading }) => {
         <div className="metric-item">
           <span className="metric-label">Mean Annual Rainfall:</span>
           <span className="metric-value">
-            {loading ? '🔄' : `${metrics.mean_rain_mm}mm`}
+            {loading ? 'Loading...' : `${metrics.mean_rain_mm}mm`}
           </span>
         </div>
         <div className="metric-item">
           <span className="metric-label">Surface Temperature:</span>
           <span className="metric-value">
-            {loading ? '🔄' : `${metrics.mean_temperature_c}°C`}
+            {loading ? 'Loading...' : `${metrics.mean_temperature_c}°C`}
           </span>
         </div>
         <div className="metric-item">
@@ -89,7 +89,7 @@ const MetricsCard = ({ metrics, scenario, loading }) => {
           textAlign: 'center',
           marginTop: '8px'
         }}>
-          ⏳ Recalculating with new scenario...
+          Recalculating with new scenario...
         </div>
       )}
     </div>
