@@ -268,6 +268,54 @@ def health_check():
         "timestamp": datetime.now().isoformat()
     })
 
+# Cache for Earth Engine data to avoid repeated processing
+climate_data_cache = {}
+# Cache for complete simulation results (geometry + scenario specific)
+simulation_cache = {}
+MAX_CACHE_SIZE = 10  # Limit cache to prevent memory issues
+
+def get_geometry_hash(geometry):
+    """Create a hash key for geometry to use as cache key"""
+    import json
+    import hashlib
+    geom_str = json.dumps(geometry, sort_keys=True)
+    return hashlib.md5(geom_str.encode()).hexdigest()
+
+def manage_cache():
+    """Keep cache size manageable"""
+    if len(climate_data_cache) > MAX_CACHE_SIZE:
+        # Remove oldest entry (simple FIFO)
+        oldest_key = next(iter(climate_data_cache))
+        del climate_data_cache[oldest_key]
+        logger.info(f"Climate cache cleanup: removed {oldest_key}")
+    
+    if len(simulation_cache) > MAX_CACHE_SIZE * 3:  # Allow more simulation cache entries
+        oldest_key = next(iter(simulation_cache))
+        del simulation_cache[oldest_key]
+        logger.info(f"Simulation cache cleanup: removed {oldest_key}")
+
+def get_simulation_cache_key(geometry_hash, scenario):
+    """Create cache key for complete simulation results"""
+    return f"{geometry_hash}_{scenario}"
+
+@app.route('/api/cache/clear', methods=['POST'])
+def clear_cache():
+    """Clear all caches"""
+    global climate_data_cache, simulation_cache
+    climate_data_cache.clear()
+    simulation_cache.clear()
+    return jsonify({"status": "success", "message": "All caches cleared"})
+
+@app.route('/api/cache/status', methods=['GET'])
+def cache_status():
+    """Get cache status"""
+    return jsonify({
+        "climate_cache_size": len(climate_data_cache),
+        "simulation_cache_size": len(simulation_cache),
+        "cached_geometries": list(climate_data_cache.keys()),
+        "cached_simulations": list(simulation_cache.keys())
+    })
+
 @app.route('/api/simulate', methods=['POST'])
 def simulate_climate_impact():
     """Main simulation endpoint with real NASA data processing"""
@@ -281,8 +329,28 @@ def simulate_climate_impact():
         
         logger.info(f"Processing simulation for scenario: {scenario}")
         
-        # Get real NASA climate data
-        climate_data = ee_service.process_climate_data(geometry)
+        # Check if we have cached complete simulation results
+        geometry_hash = get_geometry_hash(geometry)
+        simulation_cache_key = get_simulation_cache_key(geometry_hash, scenario)
+        
+        if simulation_cache_key in simulation_cache:
+            logger.info(f"🚀 Super fast: Using cached complete simulation for {scenario}")
+            cached_result = simulation_cache[simulation_cache_key]
+            # Update timestamp but return cached data
+            cached_result["processing_info"]["cache_hit"] = True
+            cached_result["processing_info"]["processing_time"] = datetime.now().isoformat()
+            return jsonify(cached_result)
+        
+        # Check if we have cached Earth Engine data for this geometry
+        if geometry_hash in climate_data_cache:
+            logger.info("⚡ Fast scenario: Using cached NASA Earth Engine data")
+            climate_data = climate_data_cache[geometry_hash]
+        else:
+            logger.info("🛰️ New geometry: Processing NASA Earth Engine data")
+            # Get real NASA climate data (only when geometry changes)
+            climate_data = ee_service.process_climate_data(geometry)
+            # Cache the result
+            climate_data_cache[geometry_hash] = climate_data
         
         # Calculate baseline runoff using SCS method
         # Urban area assumption: CN = 85 (residential, moderate density)
@@ -424,9 +492,15 @@ def simulate_climate_impact():
             "processing_info": {
                 "data_source": climate_data['data_source'],
                 "processing_time": datetime.now().isoformat(),
-                "model": "SCS Curve Number Method"
+                "model": "SCS Curve Number Method",
+                "cache_hit": False
             }
         }
+        
+        # Cache the complete simulation result
+        simulation_cache[simulation_cache_key] = result.copy()
+        manage_cache()
+        logger.info(f"💾 Cached complete simulation for {scenario}")
         
         return jsonify(result)
         
@@ -477,5 +551,7 @@ if __name__ == '__main__':
     print("  POST /api/simulate - Climate simulation")
     print("  POST /api/recommend - AI recommendations")
     print("  GET  /api/earth-engine/status - EE status")
+    print("  GET  /api/cache/status - Cache status")
+    print("  POST /api/cache/clear - Clear cache")
     
     app.run(debug=True, port=5000, host='0.0.0.0')
