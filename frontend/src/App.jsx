@@ -280,7 +280,7 @@ function App() {
       <div style={{
         position: 'absolute', 
         top: 10, 
-        left: 10, 
+        right: 10, 
         zIndex: 1000, 
         background: backendStatus === 'connected' ? 'rgba(34, 139, 34, 0.9)' : 'rgba(255, 140, 0, 0.9)', 
         color: 'white', 

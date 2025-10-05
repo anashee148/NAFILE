@@ -4,7 +4,7 @@ import MetricsCard from './MetricsCard';
 import EnvironmentalCard from './EnvironmentalCard';
 import PlanImpactCard from './PlanImpactCard';
 import InterventionsSection from './InterventionsSection';
-import DataSourcesSection from './DataSourcesSection';
+import ProcessingOverlay from './ProcessingOverlay';
 
 const FloatingPanel = ({ 
   scenario, 
@@ -130,22 +130,53 @@ const FloatingPanel = ({
               
               <div className="section">
                 <h3>NASA Data Analysis</h3>
-                <button 
-                  className={`btn-analysis ${loading ? 'loading' : ''}`}
-                  onClick={onRunSimulation}
-                  disabled={loading || backendStatus !== 'connected'}
-                >
-                  {loading ? (
-                    <>
-                      <div className="spinner"></div>
-                      {simulationStep === 'processing' && 'Processing Area...'}
-                      {simulationStep === 'climate' && 'Analyzing Climate Data...'}
-                      {simulationStep === 'ai' && 'Generating AI Insights...'}
-                    </>
-                  ) : (
-                    'Run NASA Analysis'
-                  )}
-                </button>
+                {loading ? (
+                  <div className="processing-steps">
+                    <div className={`processing-step ${simulationStep === 'processing' ? 'active' : simulationStep && simulationStep !== 'processing' ? 'completed' : 'pending'}`}>
+                      <div className="step-indicator">
+                        {simulationStep === 'processing' ? (
+                          <div className="spinner-small"></div>
+                        ) : simulationStep && simulationStep !== 'processing' ? '✓' : '1'}
+                      </div>
+                      <div className="step-content">
+                        <span className="step-title">Area Processing</span>
+                        <span className="step-desc">Analyzing geometry bounds</span>
+                      </div>
+                    </div>
+                    
+                    <div className={`processing-step ${simulationStep === 'climate' ? 'active' : (simulationStep === 'ai' || (simulationStep && simulationStep !== 'processing' && simulationStep !== 'climate')) ? 'completed' : 'pending'}`}>
+                      <div className="step-indicator">
+                        {simulationStep === 'climate' ? (
+                          <div className="spinner-small"></div>
+                        ) : (simulationStep === 'ai' || (simulationStep && simulationStep !== 'processing' && simulationStep !== 'climate')) ? '✓' : '2'}
+                      </div>
+                      <div className="step-content">
+                        <span className="step-title">NASA Satellite Data</span>
+                        <span className="step-desc">Processing 6 datasets via Earth Engine</span>
+                      </div>
+                    </div>
+                    
+                    <div className={`processing-step ${simulationStep === 'ai' ? 'active' : 'pending'}`}>
+                      <div className="step-indicator">
+                        {simulationStep === 'ai' ? (
+                          <div className="spinner-small"></div>
+                        ) : '3'}
+                      </div>
+                      <div className="step-content">
+                        <span className="step-title">AI Recommendations</span>
+                        <span className="step-desc">Generating local insights</span>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <button 
+                    className="btn-analysis"
+                    onClick={onRunSimulation}
+                    disabled={backendStatus !== 'connected'}
+                  >
+                    Run NASA Analysis
+                  </button>
+                )}
               </div>
 
               {simulationData && (
@@ -180,18 +211,18 @@ const FloatingPanel = ({
           )}
 
           {activeTab === 'analysis' && simulationData && (
-            <div className="tab-content">
-              <MetricsCard 
-                metrics={simulationData.metrics}
-                scenario={scenario}
-                loading={loading}
-              />
-
-              <EnvironmentalCard 
-                metrics={simulationData.metrics}
-                loading={loading}
-              />
-
+            <div className="tab-content analysis-grid">
+              <div className="analysis-row">
+                <MetricsCard 
+                  metrics={simulationData.metrics}
+                  scenario={scenario}
+                  loading={loading}
+                />
+                <EnvironmentalCard 
+                  metrics={simulationData.metrics}
+                  loading={loading}
+                />
+              </div>
               <PlanImpactCard 
                 simulationData={simulationData}
                 scenario={scenario}
@@ -202,12 +233,15 @@ const FloatingPanel = ({
 
           {activeTab === 'solutions' && simulationData && (
             <div className="tab-content">
-              <InterventionsSection 
-                interventions={simulationData.interventions}
-                loading={loading}
-              />
-              
-              <DataSourcesSection />
+              <div className="solutions-full-width">
+                <InterventionsSection 
+                  interventions={simulationData.interventions}
+                  loading={loading}
+                />
+              </div>
+              <div className="impact-section">
+                <PlanImpactCard data={simulationData} />
+              </div>
             </div>
           )}
         </div>

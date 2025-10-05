@@ -17,47 +17,75 @@ const Legend = ({ simulationData, showOverlay, uploadedFileName }) => {
       bottom: '20px',
       left: '20px',
       background: 'rgba(255, 255, 255, 0.95)',
-      padding: '12px',
-      borderRadius: '8px',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+      backdropFilter: 'blur(20px)',
+      padding: '16px',
+      borderRadius: '12px',
+      boxShadow: '0 8px 24px rgba(7, 23, 63, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.2) inset',
       fontSize: '12px',
       zIndex: 1000,
-      border: '1px solid #ddd',
-      minWidth: '180px'
+      border: '1px solid rgba(255, 255, 255, 0.3)',
+      minWidth: '200px'
     }}>
       <div style={{
-        fontSize: '11px',
-        fontWeight: 'bold',
-        color: '#2c3e50',
-        marginBottom: '8px',
-        borderBottom: '1px solid #eee',
-        paddingBottom: '4px'
+        fontSize: '12px',
+        fontFamily: 'Fira Sans, sans-serif',
+        fontWeight: '700',
+        color: '#07173F',
+        marginBottom: '10px',
+        borderBottom: '2px solid rgba(7, 23, 63, 0.1)',
+        paddingBottom: '6px',
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px'
       }}>
-        📍 {getAreaName()}
+        {getAreaName()}
       </div>
       
       <div className="legend-item">
-        <div className="legend-color" style={{backgroundColor: '#FF6B35'}}></div>
-        <span style={{fontSize: '11px', color: '#2c3e50'}}>Analysis Area</span>
+        <div className="legend-color" style={{backgroundColor: '#2E96F5'}}></div>
+        <span style={{
+          fontSize: '11px', 
+          color: '#07173F',
+          fontFamily: 'Overpass, sans-serif',
+          fontWeight: '600'
+        }}>Analysis Area</span>
       </div>
       
       {showOverlay && simulationData && (
         <div className="legend-item">
-          <div className="legend-color" style={{backgroundColor: '#FF3E41'}}></div>
-          <span style={{fontSize: '11px', color: '#2c3e50'}}>Climate Risk Zone</span>
+          <div className="legend-color" style={{backgroundColor: '#E43700'}}></div>
+          <span style={{
+            fontSize: '11px', 
+            color: '#07173F',
+            fontFamily: 'Overpass, sans-serif',
+            fontWeight: '600'
+          }}>Climate Risk Zone</span>
         </div>
       )}
       
-      <div className="legend-item" style={{marginTop: '8px', paddingTop: '4px', borderTop: '1px solid #eee'}}>
-        <span style={{fontSize: '10px', color: '#666'}}>
-          🛰️ NASA GIBS Satellite
+      <div className="legend-item" style={{marginTop: '10px', paddingTop: '6px', borderTop: '1px solid rgba(7, 23, 63, 0.1)'}}>
+        <span style={{
+          fontSize: '10px', 
+          color: '#0042A6',
+          fontFamily: 'Overpass, sans-serif',
+          fontWeight: '600',
+          textTransform: 'uppercase',
+          letterSpacing: '0.3px'
+        }}>
+          NASA GIBS Satellite
         </span>
       </div>
       
       {simulationData && (
         <div className="legend-item">
-          <span style={{fontSize: '10px', color: '#666'}}>
-            📊 Real Earth Engine Data
+          <span style={{
+            fontSize: '10px', 
+            color: '#0042A6',
+            fontFamily: 'Overpass, sans-serif',
+            fontWeight: '600',
+            textTransform: 'uppercase',
+            letterSpacing: '0.3px'
+          }}>
+            Real Earth Engine Data
           </span>
         </div>
       )}

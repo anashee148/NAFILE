@@ -53,7 +53,7 @@ const PlanImpactCard = ({ simulationData, scenario, loading }) => {
 
   return (
     <div className="section">
-      <h3>📊 Plan Impact Analysis</h3>
+      <h3>Plan Impact Analysis</h3>
       <div className="metrics-card" style={{
         opacity: loading ? 0.6 : 1,
         transition: 'opacity 0.3s ease'
@@ -88,8 +88,8 @@ const PlanImpactCard = ({ simulationData, scenario, loading }) => {
               fontSize: '13px',
               fontWeight: 'bold',
               color: !impact.hasComparison ? '#666' :
-                     Math.abs(impact.change) > 15 ? '#FF3E41' : 
-                     Math.abs(impact.change) > 5 ? '#FFA500' : '#4ECDC4'
+                     Math.abs(impact.change) > 15 ? '#E43700' : 
+                     Math.abs(impact.change) > 5 ? '#EAFE07' : '#2E96F5'
             }}>
               {loading ? 'Calculating...' : 
                 !impact.hasComparison ? 
