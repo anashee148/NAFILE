@@ -53,6 +53,7 @@ const ControlPanel = ({
 
           <InterventionsSection 
             interventions={simulationData.interventions}
+            loading={loading}
           />
         </>
       )}
