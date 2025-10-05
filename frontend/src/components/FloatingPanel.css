@@ -52,6 +52,7 @@
   flex-direction: column;
   animation: panelSlideIn 0.4s ease-out;
   z-index: 1001;
+  overflow: hidden;
 }
 
 /* Right-side positioning option */
@@ -479,11 +480,16 @@
 
 /* Simulation Content */
 .simulation-content {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .processing-section {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 /* Processing Steps */
@@ -586,8 +592,7 @@
 
 /* Analysis Grid Layout */
 .analysis-grid {
-  display: grid;
-  grid-template-rows: auto auto;
+  display: block;
   gap: 20px;
 }
 
