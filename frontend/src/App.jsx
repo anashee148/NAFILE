@@ -1,28 +1,54 @@
 import React, { useState, useEffect } from 'react';
 import MapView from './components/MapView';
 import ControlPanel from './components/ControlPanel';
+import Toast from './components/Toast';
 // Real data - no more mock imports
 
 function App() {
-  const [scenario, setScenario] = useState('baseline');
-  const [simulationData, setSimulationData] = useState(null);
+  const [scenario, setScenario] = useState(() => {
+    return localStorage.getItem('scenario') || 'baseline';
+  });
+  const [simulationData, setSimulationData] = useState(() => {
+    const saved = localStorage.getItem('simulationData');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Failed to parse saved simulation data:', e);
+      }
+    }
+    return null;
+  });
   const [loading, setLoading] = useState(false);
   const [simulationStep, setSimulationStep] = useState('');
   const [showOverlay, setShowOverlay] = useState(false);
-  const [uploadedFileName, setUploadedFileName] = useState('Default: Trichy Pilot Ward');
-  const [currentPlan, setCurrentPlan] = useState({
-    type: "FeatureCollection",
-    features: [{
-      type: "Feature",
-      properties: {name: "Trichy Pilot Ward"},
-      geometry: {
-        type: "Polygon",
-        coordinates: [[[80.27,13.07],[80.28,13.07],[80.28,13.08],[80.27,13.08],[80.27,13.07]]]
+  const [uploadedFileName, setUploadedFileName] = useState(() => {
+    return localStorage.getItem('uploadedFileName') || 'Default: Trichy Pilot Ward';
+  });
+  const [currentPlan, setCurrentPlan] = useState(() => {
+    const saved = localStorage.getItem('currentPlan');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Failed to parse saved plan:', e);
       }
-    }]
+    }
+    return {
+      type: "FeatureCollection",
+      features: [{
+        type: "Feature",
+        properties: {name: "Trichy Pilot Ward"},
+        geometry: {
+          type: "Polygon",
+          coordinates: [[[80.27,13.07],[80.28,13.07],[80.28,13.08],[80.27,13.08],[80.27,13.07]]]
+        }
+      }]
+    };
   });
   const [backendStatus, setBackendStatus] = useState('checking');
   const [earthEngineStatus, setEarthEngineStatus] = useState('unknown');
+  const [toast, setToast] = useState(null);
   
   // Check backend and Earth Engine status
   useEffect(() => {
@@ -55,12 +81,6 @@ function App() {
     try {
       console.log('🚀 Starting real NASA data simulation...');
       
-      // Simulate different processing steps
-      setTimeout(() => setSimulationStep('climate'), 1000);
-      setTimeout(() => setSimulationStep('elevation'), 2000);
-      setTimeout(() => setSimulationStep('runoff'), 3000);
-      setTimeout(() => setSimulationStep('ai'), 4000);
-      
       const response = await fetch('http://localhost:5000/api/simulate', {
         method: 'POST',
         headers: {
@@ -72,23 +92,33 @@ function App() {
         })
       });
 
+      setSimulationStep('climate');
+      
       if (!response.ok) {
         throw new Error(`Backend error: ${response.status}`);
       }
 
-      const data = await response.json();
-      console.log('📡 Received real NASA data:', data);
+      setSimulationStep('ai');
+      const simulationResult = await response.json();
       
-      setSimulationData({
-        metrics: data.metrics,
-        interventions: data.interventions,
-        processing_info: data.processing_info
-      });
+      setSimulationData(simulationResult);
       setShowOverlay(true);
+      
+      // Save simulation data
+      localStorage.setItem('simulationData', JSON.stringify(simulationResult));
+
+      // Show success toast
+      setToast({
+        message: `Analysis Complete! 🎉\n\nProcessed real NASA data for ${uploadedFileName.replace('.geojson', '')}\nGenerated ${simulationResult.interventions?.length || 3} AI recommendations`,
+        type: 'success'
+      });
       
     } catch (error) {
       console.error('❌ Simulation failed:', error);
-      alert(`❌ Simulation Failed!\n\n${error.message}\n\nPlease ensure:\n1. Backend server is running on localhost:5000\n2. Earth Engine is authenticated\n3. LMStudio is running on localhost:1234`);
+      setToast({
+        message: `Simulation Failed!\n\n${error.message}\n\nPlease ensure:\n1. Backend server is running on localhost:5000\n2. Earth Engine is authenticated\n3. LMStudio is running on localhost:1234`,
+        type: 'error'
+      });
       setSimulationData({
         metrics: {
           error: true,
@@ -99,11 +129,13 @@ function App() {
       setShowOverlay(false);
     } finally {
       setLoading(false);
+      setSimulationStep('');
     }
   };
 
   const handleScenarioChange = (newScenario) => {
     setScenario(newScenario);
+    localStorage.setItem('scenario', newScenario);
   };
 
   const handleLoadPlan = () => {
@@ -122,12 +154,23 @@ function App() {
             setSimulationData(null);
             setShowOverlay(false);
             setUploadedFileName(file.name);
+            
+            // Save to localStorage
+            localStorage.setItem('currentPlan', JSON.stringify(geojson));
+            localStorage.setItem('uploadedFileName', file.name);
+            
             console.log('📁 Loaded new plan:', geojson);
             
-            // Show success notification
-            alert(`✅ Successfully loaded: ${file.name}\n\nMap will center on the new location. Click "Run NASA Analysis" to process this area.`);
+            // Show success toast
+            setToast({
+              message: `Successfully loaded: ${file.name}\n\nMap will center on the new location. Click "Run NASA Analysis" to process this area.`,
+              type: 'success'
+            });
           } catch (error) {
-            alert('Invalid GeoJSON file');
+            setToast({
+              message: 'Invalid GeoJSON file\n\nPlease select a valid .geojson file with proper coordinates.',
+              type: 'error'
+            });
           }
         };
         reader.readAsText(file);
@@ -188,6 +231,14 @@ function App() {
         backendStatus={backendStatus}
         earthEngineStatus={earthEngineStatus}
       />
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }

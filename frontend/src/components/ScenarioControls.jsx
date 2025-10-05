@@ -12,8 +12,8 @@ const ScenarioControls = ({ scenario, onScenarioChange }) => {
           Baseline
         </button>
         <button 
-          className={`scenario-btn ${scenario === 'scenarioB' ? 'active' : ''}`}
-          onClick={() => onScenarioChange('scenarioB')}
+          className={`scenario-btn ${scenario === 'rcp45' ? 'active' : ''}`}
+          onClick={() => onScenarioChange('rcp45')}
         >
           +10% Rainfall
         </button>
